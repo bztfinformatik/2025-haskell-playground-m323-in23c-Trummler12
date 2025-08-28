@@ -1,8 +1,20 @@
-numlang :: Int -> String -> String
-numlang n lang = case lang of
-  "de" -> numlangDE (toInteger n)
-  "en" -> numlangEN (toInteger n)
-  _    -> show n
+import Data.List (intercalate)
+import Data.Char (toUpper)
+
+-- Set to False if the terminal cannot display umlauts
+supportsUmlauts :: Bool
+supportsUmlauts = False
+
+supportedLangs :: [String]
+supportedLangs = ["de", "en"]
+
+numlang :: Integer -> String -> String
+numlang n lang =
+      let result = case lang of
+            "de" -> numlangDE n
+            "en" -> numlangEN n
+            _    -> error $ "Unsupported language: " ++ lang ++ ". Supported languages: " ++ intercalate ", " supportedLangs
+      in if supportsUmlauts then result else replaceSpecials result
 
 -- English number names
 numlangEN :: Integer -> String
@@ -29,8 +41,32 @@ convertGroupEN n
           hPart = onesEN !! fromIntegral h ++ " hundred"
       in hPart ++ if r > 0 then " and " ++ convertGroupEN r else ""
 
+illionName :: Integer -> String
+illionName n = illionPrefix n ++ "illion"
+
+illionPrefix :: Integer -> String
+illionPrefix n
+  | n <= 10 = base !! fromIntegral n
+  | n < 20 = teens !! fromIntegral (n - 10)
+  | n < 100 = units !! fromIntegral (n `mod` 10) ++ tens !! fromIntegral (n `div` 10)
+  | n < 1000 = hundreds !! fromIntegral (n `div` 100) ++ illionPrefix (n `mod` 100)
+  | otherwise = let (q, r) = n `divMod` 1000 in illionPrefix q ++ illionPrefix r
+  where
+    base = ["","m","b","tr","quadr","quint","sext","sept","oct","non","dec"]
+    teens = ["dec","undec","duodec","tredec","quattuordec","quindec","sexdec","septendec","octodec","novemdec"]
+    units = ["","un","duo","tre","quattuor","quin","sex","septen","octo","novem"]
+    tens = ["","dec","vigint","trigint","quadragint","quinquagint","sexagint","septuagint","octogint","nonagint"]
+    hundreds = ["","cent","ducent","trecent","quadringent","quingent","sescent","septingent","octingent","nongent"]
+
+capitalize :: String -> String
+capitalize [] = []
+capitalize (x:xs) = toUpper x : xs
+
+makeArde :: String -> String
+makeArde name = take (length name - 3) name ++ "iarde"
+
 scalesEN :: [String]
-scalesEN = ["", "thousand", "million", "billion", "trillion", "quadrillion", "quintillion"]
+scalesEN = "" : "thousand" : map illionName [1..]
 
 onesEN :: [String]
 onesEN = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
@@ -56,8 +92,14 @@ numlangDE x
          else convertGroupDE False g ++ " " ++ plur
 
 scalesDE :: [(String, String)]
-scalesDE = [("Million", "Millionen"), ("Milliarde", "Milliarden"), ("Billion", "Billionen"),
-            ("Billiarde", "Billiarden"), ("Trillion", "Trillionen")]
+scalesDE = concatMap makePairs $ map (capitalize . illionName) [1..]
+  where
+    makePairs base =
+      let singular = base
+          plural   = base ++ "en"
+          arde     = makeArde base
+          ardePl   = arde ++ "n"
+      in [(singular, plural), (arde, ardePl)]
 
 convertGroupDE :: Bool -> Integer -> String
 convertGroupDE _ 0 = ""
@@ -89,4 +131,16 @@ tensDE = ["", "", "zwanzig", "dreißig", "vierzig", "fünfzig", "sechzig", "sieb
 groups :: Integer -> [Integer]
 groups 0 = []
 groups x = let (q, r) = x `divMod` 1000 in r : groups q
+
+replaceSpecials :: String -> String
+replaceSpecials = concatMap repl
+  where
+    repl 'ä' = "ae"
+    repl 'ö' = "oe"
+    repl 'ü' = "ue"
+    repl 'Ä' = "Ae"
+    repl 'Ö' = "Oe"
+    repl 'Ü' = "Ue"
+    repl 'ß' = "ss"
+    repl c   = [c]
 

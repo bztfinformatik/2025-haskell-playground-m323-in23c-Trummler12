@@ -18,6 +18,11 @@ cd M323-Haskell   # cd M323-Haskell-COPY
 Set-ExecutionPolicy Bypass -Scope Process -Force;
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
 try { & ([ScriptBlock]::Create((Invoke-WebRequest https://www.haskell.org/ghcup/sh/bootstrap-haskell.ps1 -UseBasicParsing))) -Interactive -DisableCurl } catch { Write-Error $_ }
+```
+Nachdem das Begleit-Terminal geschlossen wurde:
+- VSCode neu starten
+- Installation prüfen:
+```powershell
 ghcup tui   # install recommended GHC, cabal, HLS
 ```
 
@@ -40,13 +45,14 @@ ghci --version
 ghci
 ```
 - Load file:
-```haskell
+```ghci
 :l simple.hs
-:l numlang.hs   # Repeat this for every .hs file
+:l numlang.hs
+-- Repeat :l for every .hs file
 :reload
 ```
 - Compile file:
-```haskell
+```ghci
 :!ghc --make Main.hs -o main.exe
 ```
 
@@ -54,7 +60,7 @@ ghci
 
 ## Cabal project
 
-```haskell
+```ghci
 cabal init --libandexe -n --source-dir=src --application-dir=app --language=GHC2021
 cabal build
 cabal run
@@ -67,7 +73,7 @@ cabal repl
 
 **GHCi**
 
-```haskell
+```ghci
 ghci
 :load Datei.hs
 :type expr
@@ -77,7 +83,7 @@ ghci
 
 **Cabal**
 
-```haskell
+```ghci
 cabal build
 cabal run
 cabal repl
