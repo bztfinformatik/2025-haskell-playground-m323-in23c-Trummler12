@@ -41,7 +41,8 @@ ghci
 ```
 - Load file:
 ```haskell
-:load simple.hs
+:l simple.hs
+:l numlang.hs   # Repeat this for every .hs file
 :reload
 ```
 - Compile file:
