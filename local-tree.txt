@@ -1,0 +1,12 @@
+﻿
+
+Folder PATH listing for volume Windows
+Volume serial number is AA0F-5FCF
+C:.
+|   local-tree.ps1
+|   local-tree.txt
+|   simple.hs
+|
+\---.github
+        .keep
+
