@@ -42,6 +42,7 @@ ghci --version
 
 - Start REPL:
 ```PowerShell
+# cd M323-Haskell   # cd M323-Haskell-COPY
 ghci
 ```
 - Load file:
