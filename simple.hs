@@ -1,3 +1,5 @@
+module Simple where
+
 -- Return the third element of a triple
 -- Elements of triple can be of different types
 third :: (a ,b, c) -> c

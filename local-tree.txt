@@ -3,8 +3,12 @@
 Folder PATH listing for volume Windows
 Volume serial number is AA0F-5FCF
 C:.
+|   .ghci
+|   GHCiPrint.hs
 |   local-tree.ps1
 |   local-tree.txt
+|   numlang.hs
+|   README.md
 |   simple.hs
 |
 \---.github
