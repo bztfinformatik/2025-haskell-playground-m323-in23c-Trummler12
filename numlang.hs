@@ -1,12 +1,13 @@
 module NumLang (numlang) where
 
 import qualified Data.Map.Strict as M
-import GHC.IO.Unsafe
+import GHC.IO.Unsafe ( unsafePerformIO )
 import Data.Ratio ( (%) , numerator, denominator )
 import Data.List (intercalate, isPrefixOf)
 import Data.Char (toUpper, isDigit, isSpace)
 import Text.Read (readMaybe)
-import Data.Time
+import Data.Time ( getZonedTime, LocalTime(localTimeOfDay),
+                   TimeOfDay(TimeOfDay), ZonedTime(zonedTimeToLocalTime) )
 
 -- Set to False if the terminal cannot display umlauts
 supportsUmlauts :: Bool
