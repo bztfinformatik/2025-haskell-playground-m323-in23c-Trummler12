@@ -1,7 +1,7 @@
 ﻿
 
-Folder PATH listing for volume Windows
-Volume serial number is AA0F-5FCF
+Auflistung der Ordnerpfade für Volume WINDOWS
+Volumeseriennummer : 9AF3-4876
 C:.
 |   .ghci
 |   GHCiPrint.hs

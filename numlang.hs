@@ -256,7 +256,7 @@ numlangInt n lang =
             "fr" -> numlangFR n
             "it" -> numlangIT n
             "tr" -> numlangTR n
-            "jp2" -> numlangJP2 n zeroJP
+            "jp2" -> numlangJP2 n hourZero
             _    -> error $ "Unsupported language: " ++ lang ++
                           ". Supported languages: " ++ intercalate ", " supportedLangs
       in if supportsUmlauts then result else replaceSpecials result
@@ -663,18 +663,15 @@ scalesTR = "" : "bin" : "milyon" : "milyar" : map turkishIllion [3..]
 
 
 -- Japanese number names (romaji)
--- zeroJP: Liest die lokale Uhrzeit; wenn Stunde ∈ {0,12} → zero = "rei", sonst "zero"
-zeroJP :: Bool
-zeroJP =
-  let TimeOfDay h _ _ = localTimeOfDay . zonedTimeToLocalTime $ unsafePerformIO getZonedTime
-      hour = h `mod` 12
-      zero = hour == 0
-  in zero
+hourZero :: Bool
+hourZero =
+  let TimeOfDay hour _ _ = localTimeOfDay . zonedTimeToLocalTime $ unsafePerformIO getZonedTime
+  in hour `mod` 12 == 0
 
 numlangJP2 :: Integer -> Bool -> String
-numlangJP2 n rei
-  | n < 0     = "mainasu " ++ numlangJP2 (-n) rei
-  | n == 0    = if rei then "rei" else "zero"
+numlangJP2 n hourZero
+  | n < 0     = "mainasu " ++ numlangJP2 (-n) hourZero
+  | n == 0    = if hourZero then "rei" else "zero"
   | otherwise =
       let gs            = [(g,i) | (g,i) <- zip (groups n 4) [0..], g > 0]
           maxNamedIx    = length scalesJP2 - 1
@@ -690,7 +687,7 @@ numlangJP2 n rei
                     coeffRead   = convertGroupJP2 coeffVal
                     tailWords   = unwords . reverse $
                                     [ groupWords g i | (g,i) <- low ]
-                    headWords   = coeffRead ++ " kakeru juu no " ++ numlangJP2 (fromIntegral e) rei ++ " jou"
+                    headWords   = coeffRead ++ " kakeru juu no " ++ numlangJP2 (fromIntegral e) hourZero ++ " jou"
                 in if null tailWords then headWords else headWords ++ " purasu " ++ tailWords
   where
     groupWords g i =
