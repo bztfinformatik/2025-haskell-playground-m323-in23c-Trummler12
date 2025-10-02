@@ -1,11 +1,11 @@
 -- Load printer and both code files
-:load GHCiPrint NumLang Simple
+:load GHCiPrint NumLang Simple Vector
 
 -- Put both modules into prompt scope:
-:module + NumLang Simple
+:module + NumLang Simple Vector
 
 -- Raw printer (real newlines, no quotes)
 :set -interactive-print=GHCiPrint.iprint
 
 -- Make :r do everything again
-:def! r \_ -> return ":reload\n:module + NumLang Simple\n:set -interactive-print=GHCiPrint.iprint"
+:def! r \_ -> return ":reload\n:module + NumLang Simple Vector\n:set -interactive-print=GHCiPrint.iprint"
