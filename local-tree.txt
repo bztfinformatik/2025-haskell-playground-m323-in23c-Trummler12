@@ -1,0 +1,16 @@
+﻿
+
+Auflistung der Ordnerpfade für Volume WINDOWS
+Volumeseriennummer : 9AF3-4876
+C:.
+|   .ghci
+|   GHCiPrint.hs
+|   local-tree.ps1
+|   local-tree.txt
+|   numlang.hs
+|   README.md
+|   simple.hs
+|
+\---.github
+        .keep
+
