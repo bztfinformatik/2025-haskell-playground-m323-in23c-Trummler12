@@ -1,0 +1,23 @@
+cabal-version:      2.4
+name:               numlang
+version:            0.1.0.0
+synopsis:           Multi-language number-to-words conversion
+license:            NONE
+author:             M323 Student
+maintainer:         student@example.com
+build-type:         Simple
+
+common common-opts
+  default-language: GHC2021
+  ghc-options:      -Wall -Wcompat
+  build-depends:    base >=4.14 && <5
+
+library
+  import:           common-opts
+  hs-source-dirs:   src
+  exposed-modules:
+      NumLang.NumLang
+  build-depends:
+      containers
+    , text
+    , time

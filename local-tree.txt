@@ -1,16 +1,61 @@
 ﻿
 
-Auflistung der Ordnerpfade für Volume WINDOWS
-Volumeseriennummer : 9AF3-4876
+Folder PATH listing for volume Windows
+Volume serial number is AA0F-5FCF
 C:.
 |   .ghci
-|   GHCiPrint.hs
+|   cabal.project
+|   ghci
+|   ghci.ps1
 |   local-tree.ps1
 |   local-tree.txt
-|   numlang.hs
+|   PLANUNG.md
 |   README.md
-|   simple.hs
+|   TASK_DOCS.md
+|   TASK_PLAN.md
 |
-\---.github
-        .keep
++---.github
+|       .keep
+|
++---demos
+|   |   demos.cabal
+|   |
+|   +---app
+|   |       demo.hs
+|   |
+|   \---src
++---dist-newstyle
+|       [Contents excluded]
+|
++---geometry
+|   |   geometry.cabal
+|   |
+|   \---src
+|       \---Geometry
+|           |   FilterByOrthants.hs
+|           |   Vector.hs
+|           |
+|           \---Shapes
+|               +---ThreeD
+|               |       Cube.hs
+|               |       Sphere.hs
+|               |
+|               \---TwoD
+|                       Circle.hs
+|                       Square.hs
+|                       Triangle.hs
+|
++---numlang
+|   |   numlang.cabal
+|   |
+|   \---src
+|       \---NumLang
+|               NumLang.hs
+|
+\---utility
+    |   utility.cabal
+    |
+    \---src
+        \---Utility
+                GHCiPrint.hs
 

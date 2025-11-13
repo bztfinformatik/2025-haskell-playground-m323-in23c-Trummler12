@@ -1,0 +1,10 @@
+-- .ghci-all: Load all library modules
+-- Used when loading demos:exe:demo or --enable-multi-repl with all packages
+-- Works because demo.hs imports all these modules
+
+:module + Geometry.Vector NumLang.NumLang Utility.GHCiPrint
+:set -interactive-print=Utility.GHCiPrint.iprint
+:set prompt "ghci[all]> "
+
+-- Reload macro
+:def! r \_ -> return ":reload\n:module + Geometry.Vector NumLang.NumLang Utility.GHCiPrint\n:set -interactive-print=Utility.GHCiPrint.iprint"

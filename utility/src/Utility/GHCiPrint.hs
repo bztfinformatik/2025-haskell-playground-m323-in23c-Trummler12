@@ -1,4 +1,4 @@
-module GHCiPrint (iprint) where
+module Utility.GHCiPrint (iprint) where
 
 import Data.Typeable (Typeable, cast)
 import qualified Data.Text as T

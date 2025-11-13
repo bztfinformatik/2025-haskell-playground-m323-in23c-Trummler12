@@ -1,0 +1,4 @@
+-- .ghci-numlang: Settings for lib:numlang
+-- Note: Use 'import NumLang.NumLang' manually in REPL, or it's auto-available unqualified
+
+:set prompt "ghci[numlang]> "

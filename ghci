@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Auto-discovery Wrapper für Cabal REPL
+# Lädt automatisch alle Library-Pakete oder ein spezifisches Paket
+# Unterstützt: --list (Paketliste anzeigen)
+
+# Suche lokale Cabal-Pakete (nicht in dist-newstyle)
+readarray -t CABALS < <(find . -maxdepth 2 -type f -name '*.cabal' \
+  -not -path './dist-newstyle/*' | sort)
+
+# Extrahiere Paketnamen und prüfe, ob eine 'library' Stanza existiert
+ALL_PKGS=()
+LIB_PKGS=()
+for cabal in "${CABALS[@]}"; do
+  name=$(awk 'BEGIN{IGNORECASE=1} $1=="name:" {print $2; exit}' "$cabal")
+  [[ -n "${name:-}" ]] || continue
+  ALL_PKGS+=("$name")
+  if awk 'BEGIN{IGNORECASE=1} /^library([[:space:]]|$)/{found=1} END{exit !found}' "$cabal"; then
+    LIB_PKGS+=("$name")
+  fi
+done
+
+csv_join() { local IFS=,; echo "$*"; }
+
+# Service-Befehl: --list
+if [[ $# -eq 1 && "$1" == "--list" ]]; then
+  echo "Library packages: ${LIB_PKGS[*]}"
+  echo "All packages: ${ALL_PKGS[*]}"
+  exit 0
+fi
+
+# Helper: Get absolute path to .ghci script
+get_ghci_script() {
+  local name="$1"
+  local script="$PWD/.ghci-$name"
+  if [[ -f "$script" ]]; then
+    echo "$script"
+  else
+    echo "$PWD/.ghci"
+  fi
+}
+
+if [[ $# -eq 0 ]]; then
+  # Load all libraries via demos executable
+  if printf '%s\n' "${ALL_PKGS[@]}" | grep -q '^demos$'; then
+    echo "Loading all libraries via demos executable" >&2
+    ghci_script=$(get_ghci_script "all")
+    exec cabal repl demos:exe:demo --ghc-options="-ghci-script=$ghci_script"
+  elif [[ ${#LIB_PKGS[@]} -eq 0 ]]; then
+    echo "Keine Library-Pakete gefunden." >&2; exit 1
+  else
+    echo "Demo-Paket nicht gefunden." >&2; exit 1
+  fi
+elif [[ $# -eq 1 ]]; then
+  # Single package
+  pkg="$1"
+  is_pkg=false
+  for p in "${ALL_PKGS[@]}"; do
+    if [[ "$pkg" == "$p" ]]; then
+      is_pkg=true
+      break
+    fi
+  done
+  
+  if $is_pkg; then
+    echo "Loading library: $pkg" >&2
+    ghci_script=$(get_ghci_script "$pkg")
+    exec cabal repl "lib:$pkg" --ghc-options="-ghci-script=$ghci_script"
+  else
+    # Pass through
+    exec cabal repl "$pkg" --ghc-options="-ghci-script=$PWD/.ghci"
+  fi
+else
+  # Multi-package: check if all args are packages
+  all_are_pkgs=true
+  for arg in "$@"; do
+    found=false
+    for p in "${ALL_PKGS[@]}"; do
+      if [[ "$arg" == "$p" ]]; then
+        found=true
+        break
+      fi
+    done
+    if ! $found; then
+      all_are_pkgs=false
+      break
+    fi
+  done
+  
+  if $all_are_pkgs; then
+    echo "Loading libraries: $* (requires multi-repl)" >&2
+    targets=()
+    for pkg in "$@"; do
+      targets+=("lib:$pkg")
+    done
+    ghci_script=$(get_ghci_script "all")
+    exec cabal repl --enable-multi-repl "${targets[@]}" --ghc-options="-ghci-script=$ghci_script"
+  else
+    # Pass through
+    exec cabal repl "$@" --ghc-options="-ghci-script=$PWD/.ghci"
+  fi
+fi

@@ -1,4 +1,9 @@
-module Simple where
+module Main where
+
+-- Import library modules to make them available in GHCi
+import Geometry.Vector
+import NumLang.NumLang
+import Utility.GHCiPrint
 
 -- Return the third element of a triple
 -- Elements of triple can be of different types
@@ -65,3 +70,10 @@ num2wordDeOrEn 2 "en" = "two"
 num2wordDeOrEn 3 "en" = "three"
 num2wordDeOrEn n _ = show n  
 
+main :: IO ()
+main = do
+  putStrLn "Demo exercises from M323-Haskell"
+  putStrLn "================================"
+  putStrLn $ "num2word 3: " ++ num2word 3
+  putStrLn $ "rectangleArea 5 10: " ++ show (rectangleArea 5 10)
+  putStrLn $ "triangleArea 6 8: " ++ show (triangleArea 6 8)

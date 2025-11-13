@@ -1,0 +1,3 @@
+-- .ghci-utility: Settings for lib:utility
+
+:set prompt "ghci[utility]> "

@@ -1,0 +1,4 @@
+-- .ghci-geometry: Settings for lib:geometry
+-- Note: Use 'import Geometry.Vector' manually in REPL, or it's auto-available unqualified
+
+:set prompt "ghci[geometry]> "

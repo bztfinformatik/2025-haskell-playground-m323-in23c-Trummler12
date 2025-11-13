@@ -1,0 +1,23 @@
+cabal-version:      2.4
+name:               demos
+version:            0.1.0.0
+synopsis:           Demo exercises for M323-Haskell
+license:            NONE
+author:             M323 Student
+maintainer:         student@example.com
+build-type:         Simple
+
+common common-opts
+  default-language: GHC2021
+  ghc-options:      -Wall -Wcompat
+  build-depends:    base >=4.14 && <5
+
+executable demo
+  import:           common-opts
+  main-is:          demo.hs
+  hs-source-dirs:   app
+  build-depends:
+      base
+    , geometry
+    , numlang
+    , utility

@@ -1,4 +1,4 @@
-module NumLang (numlang) where
+module NumLang.NumLang (numlang) where
 
 import qualified Data.Map.Strict as M
 import GHC.IO.Unsafe ( unsafePerformIO )

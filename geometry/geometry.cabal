@@ -1,0 +1,27 @@
+cabal-version:      2.4
+name:               geometry
+version:            0.1.0.0
+synopsis:           Vector mathematics and geometric shapes
+license:            NONE
+author:             M323 Student
+maintainer:         student@example.com
+build-type:         Simple
+
+common common-opts
+  default-language: GHC2021
+  ghc-options:      -Wall -Wcompat
+  build-depends:    base >=4.14 && <5
+
+library
+  import:           common-opts
+  hs-source-dirs:   src
+  exposed-modules:
+      Geometry.Vector
+      Geometry.FilterByOrthants
+      Geometry.Shapes.TwoD.Circle
+      Geometry.Shapes.TwoD.Square
+      Geometry.Shapes.TwoD.Triangle
+      Geometry.Shapes.ThreeD.Cube
+      Geometry.Shapes.ThreeD.Sphere
+  build-depends:
+      time

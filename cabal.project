@@ -1,0 +1,8 @@
+packages:
+  geometry/
+  numlang/
+  utility/
+  demos/
+
+-- Enable multi-repl for loading multiple libraries simultaneously
+multi-repl: True

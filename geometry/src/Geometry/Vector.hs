@@ -8,7 +8,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Vector where
+module Geometry.Vector where
 
 import GHC.Exts     (Constraint)
 import GHC.TypeLits (TypeError, ErrorMessage(..))
