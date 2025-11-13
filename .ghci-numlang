@@ -1,0 +1,3 @@
+-- Load numlang modules
+:m + NumLang.NumLang Utility.GHCiPrint
+:set -interactive-print=Utility.GHCiPrint.iprint

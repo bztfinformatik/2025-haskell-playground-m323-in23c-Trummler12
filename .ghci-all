@@ -1,0 +1,3 @@
+-- Load all modules (for demos:exe:demo target or multi-repl)
+:m + Geometry.Vector NumLang.NumLang Utility.GHCiPrint
+:set -interactive-print=Utility.GHCiPrint.iprint

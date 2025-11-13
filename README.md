@@ -1,79 +1,105 @@
-# M323-Haskell – numlang & more
+# M323-Haskell – Cabal Workspace
 
-Ziel: schnell ins REPL, Module laden, Zahlen „sprechen“ (DE/EN), und schöne, **un-escaped** Ausgaben sehen.
+Modular Haskell workspace with auto-discovery wrappers for quick REPL access.
 
-## Projektstruktur
+## Workspace Structure
 
-- `GHCiPrint.hs` – Custom-Printer `iprint` für REPL: Strings/Text/ByteString **roh** (echte Newlines, keine Quotes).
-- `NumLang.hs` – Hauptmodul mit `numlang` (Typeclass + Instanzen für `Integer`, `Rational`, `Double`, `Float`, `String`), Parser und periodischer Dezimal-Erkennung. Export: `numlang`.
-- `Simple.hs` – kleine Beispiel-/Übungsfunktionen (z.B. `num2word`, wovon numlang inspiriert ist).
-- `.ghci` – Session-Konfiguration (lädt Module, setzt Printer, richtet `:r`-Macro ein).
+This is a **Cabal multi-package workspace** with:
 
-## 0a) Installation (einmalig)
+- **`geometry/`** – Library for 2D vector operations (`Geometry.Vector`)
+- **`numlang/`** – Library for multi-language number-to-words conversion (`NumLang.NumLang`)
+- **`utility/`** – Library with custom REPL printer (`Utility.GHCiPrint`)
+- **`demos/`** – Executable aggregator that depends on all libraries
+- **`cabal.project`** – Workspace configuration (multi-repl enabled)
+
+### Module Hierarchy
+```
+Geometry.Vector     -- 2D vectors, type-safe operations (GADTs, TypeFamilies)
+NumLang.NumLang     -- numlang function (typeclass-based, supports Integer/Rational/String)
+Utility.GHCiPrint   -- iprint: raw string/text output for REPL
+Main                -- demo executable (simple.hs examples)
+```
+
+## Prerequisites
+
+- GHC (9.0+) and Cabal (3.0+) installed via [GHCup](https://www.haskell.org/ghcup/)
+- VS Code with `haskell.haskell` extension (optional, for IDE features)
+
+## Quick Start
+
+### 1) Build the workspace
 
 ```powershell
-cd M323-Haskell   # oder: cd M323-Haskell-COPY
-````
-
-GHCup via PowerShell (ohne Admin) installieren:
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force;
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
-try { & ([ScriptBlock]::Create((Invoke-WebRequest https://www.haskell.org/ghcup/sh/bootstrap-haskell.ps1 -UseBasicParsing))) -Interactive -DisableCurl } catch { Write-Error $_ }
+cd M323-Haskell
+cabal build all
 ```
 
-Danach VS Code neu starten, Tools prüfen:
-```powershell
-ghcup tui    # empfohlene GHC, cabal, HLS installieren
-ghc --version
-cabal --version
-ghci --version
-```
+### 2) REPL Access via Wrappers
 
-VS Code-Extension: `haskell.haskell`.
-
-## 0b) .ghci (automatisches Setup)
-
-Lege im Projektordner `.ghci` an (falls noch nicht vorhanden) mit:
-
-```ghci
-:load GHCiPrint NumLang Simple
-:module + NumLang Simple
-:set -interactive-print=GHCiPrint.iprint
-:def! r \_ -> return ":reload\n:module + NumLang Simple\n:set -interactive-print=GHCiPrint.iprint"
-```
-
-* Lädt Printer & Code-Module.
-* Bringt `NumLang` & `Simple` **in den Prompt-Scope**, damit Funktionen **ohne** Qualifier verfügbar sind.
-* Stellt sicher, dass `:r` (Reload) **immer** Kontext & Printer neu setzt.
-
-## 1) REPL-Workflow (täglich)
+**PowerShell wrapper** (`hs.ps1`) provides auto-discovery and smart loading:
 
 ```powershell
-ghci
+# List available packages
+.\hs.ps1 --list
+
+# Load demos (all libraries available)
+.\hs.ps1
+
+# Load specific library + utility
+.\hs.ps1 geometry
+.\hs.ps1 numlang
+
+# Pass additional args to cabal repl
+.\hs.ps1 -- --repl-options -v
 ```
 
-Jetzt sind `numlang` & Co. direkt da (unescaped Output):
-
-```ghci
--- Integer
-numlang "32847218746876234" "de"
-
--- Bruch (String → exakt Rational → Periode)
-numlang "328/7" "de"
-numlang "328/7" "en"
-
--- Beispiele aus Simple
-num2word 3
+**Optional: Add to PowerShell profile** for `hs` command anywhere:
+```powershell
+notepad $PROFILE
+# Add:
+function hs { param([Parameter(ValueFromRemainingArguments=$true)][string[]]$Args)
+  $local = Join-Path $PWD 'hs.ps1'
+  if (Test-Path $local) { & $local @Args } else { cabal repl @Args }
+}
 ```
 
-**Reload nach Änderungen:**
-Einfach `:r` – der `.ghci`-Macro kümmert sich um alles.
+### 3) REPL Workflow
 
-**Neue Datei hinzufügen:**
+```powershell
+.\hs.ps1
+```
 
-* Schnell testen: `:add NeuesModul(.hs)` (fügt hinzu, ohne anderes zu entladen)
-* Dauerhaft: `.ghci` um die Datei erweitern und `:r`
+In the REPL (all modules loaded, custom printer active):
+
+```haskell
+ghci> :browse Geometry.Vector
+V2 :: Double -> Double -> V2
+vadd :: V2 -> V2 -> V2
+vsub :: V2 -> V2 -> V2
+...
+
+ghci> :browse NumLang.NumLang
+numlang :: NumLang a => a -> String -> String
+
+ghci> numlang (69 :: Integer) "fr"
+soixante-neuf
+
+ghci> numlang "328/7" "de"
+sechsundvierzig Komma acht Periode fünf sieben eins vier zwei
+
+ghci> vadd (V2 1 2) (V2 3 4)
+V2 4.0 6.0
+```
+
+**Reload after changes:**
+```haskell
+ghci> :r
+```
+
+**Exit:**
+```haskell
+ghci> :q
+```
 
 ## 2) numlang – Kurzreferenz
 
