@@ -37,12 +37,14 @@ function Normalize-Target([string]$t) {
 }
 
 # passendes .ghci-Skript bestimmen
-$rootGhci = (Resolve-Path ".\.ghci").Path
+$rootGhci = (Resolve-Path "./.ghci").Path
 function GhciScript-For([string]$pkg) {
   if ([string]::IsNullOrWhiteSpace($pkg)) {
-    $p = ".\.ghci-all"
+    # Aggregator: use .ghci-all with all imports
+    $p = "./.ghci-all"
   } else {
-    $p = ".\.ghci-$pkg"
+    # Single lib: use neutral .ghci (Cabal sets context automatically)
+    $p = "./.ghci"
   }
   if (Test-Path $p) {
     return (Resolve-Path $p).Path
@@ -88,7 +90,9 @@ elseif ($normalized.Count -eq 1 -and ($allPkgs -contains $normalized[0])) {
   cabal repl ("lib:" + $pkg) --repl-options "-ghci-script=$script"
 }
 else {
-  # alles andere direkt an cabal repl durchreichen (z. B. multi-repl-Targets)
-  # hier nur neutrales .ghci verwenden
+  # Multi-Ziel-REPL: Low-Level, keine Komfort-Imports
+  Write-Host "Hinweis: Mehrere Targets starten die experimentelle Cabal-Multi-REPL." -ForegroundColor Yellow
+  Write-Host "Auto-Imports aus .ghci-all sind hier absichtlich deaktiviert." -ForegroundColor Yellow
+  Write-Host "Nutzen Sie 'import Geometry.Vector' bzw. 'import NumLang.NumLang' manuell." -ForegroundColor Yellow
   cabal repl @Args --repl-options "-ghci-script=$rootGhci"
 }

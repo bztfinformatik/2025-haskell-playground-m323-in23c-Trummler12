@@ -1,1 +1,2 @@
-:m + Geometry.Vector
+-- .ghci-geometry: optional, nur Prompt
+:set prompt "geometry> "

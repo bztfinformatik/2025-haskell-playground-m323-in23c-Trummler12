@@ -1,4 +1,4 @@
--- Neutral root .ghci (no module imports that could fail)
+-- .ghci (Root): nur globale Flags, keine Imports
 :set -Wall
-:set prompt "ghci> "
 :set -fno-warn-type-defaults
+:set prompt "ghci> "

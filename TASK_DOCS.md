@@ -135,8 +135,88 @@ hs geometry            # ✓ Loads lib:geometry → V2 5 6.2 works
 
 All functions work correctly. Minor cosmetic warnings about "hidden package" during .ghci load are harmless - GHCi recovers and functions are available.
 
+## Post-HaskellGPT Refinements (Session 2 - 2024-11-17)
+
+### Issues Addressed
+1. **"Hidden package" errors** when running `hs numlang` or `hs geometry`
+   - Root cause: `.ghci-<pkg>` tried to import modules before Cabal set package flags
+2. **Unclear Multi-REPL behavior** with multiple arguments
+   - No documentation about experimental status and manual import requirements
+
+### Changes Applied (HaskellGPT's Recommendations)
+
+**1. Neutralize `.ghci` scripts to avoid timing issues**
+- **`.ghci`** (root): Removed all module imports, kept only flags (`:set -Wall`, `:set -fno-warn-type-defaults`, prompt)
+- **`.ghci-all`**: Kept intact for aggregator mode (`hs`) with all imports
+- **`.ghci-numlang`**: Replaced with prompt customization only (`:set prompt "numlang> "`)
+- **`.ghci-geometry`**: Replaced with prompt customization only (`:set prompt "geometry> "`)
+
+*Rationale:* Cabal automatically sets module context for single-lib REPLs. Manual `:m +` in `.ghci-<pkg>` runs **too early** (before Cabal configures package flags) → "hidden package" errors. Empty scripts avoid timing issue.
+
+**2. Update `hs.ps1` script logic**
+- Single-lib targets now use **neutral `.ghci`** instead of `.ghci-<pkg>`
+  - `GhciScript-For`: `else { $p = "./.ghci" }` (was `"./.ghci-$pkg"`)
+- Multi-argument calls show **clear warning messages** in yellow:
+  ```
+  Hinweis: Mehrere Targets starten die experimentelle Cabal-Multi-REPL.
+  Auto-Imports aus .ghci-all sind hier absichtlich deaktiviert.
+  Nutzen Sie 'import Geometry.Vector' bzw. 'import NumLang.NumLang' manuell.
+  ```
+
+### Verification Results (All Tests Passed)
+
+**`hs numlang`**
+```
+✅ No "hidden package" errors (clean startup)
+✅ Loads lib:numlang with neutral .ghci
+✅ Functions (numlang) in scope automatically via Cabal
+Output: "fuenfundneunzig"
+```
+
+**`hs geometry`**
+```
+✅ No "hidden package" errors (clean startup)
+✅ Loads lib:geometry with neutral .ghci
+✅ Constructors (V2, vadd) in scope automatically
+Output: V2 (-1.0) 927.2
+```
+
+**`hs` (aggregator)**
+```
+✅ Loads demos:exe:demo with .ghci-all
+✅ All modules available (Geometry, NumLang, Utility)
+✅ Custom iprint still works
+Output: Turkish number rendering ("yuez yirmi uec katrilyon...")
+```
+
+**`hs geometry numlang` (Multi-REPL)**
+```
+✅ Shows yellow warning about manual imports
+✅ Loads both packages
+⚠️  "Command is not supported (yet) in multi-mode" (Cabal limitation, expected)
+✅ Geometry functions work (vadd, V2)
+⚠️  numlang not in scope (expected - manual import required per warning)
+```
+
+### Design Summary
+
+| Mode | Command | `.ghci` Script | Auto-Imports | Status |
+|------|---------|---------------|--------------|--------|
+| Aggregator | `hs` | `.ghci-all` | ✅ All modules | Fully working |
+| Single-lib | `hs numlang` | `.ghci` (neutral) | ✅ Via Cabal | Clean startup |
+| Single-lib | `hs geometry` | `.ghci` (neutral) | ✅ Via Cabal | Clean startup |
+| Multi-REPL | `hs pkg1 pkg2` | `.ghci` (neutral) | ❌ Manual required | Experimental, documented |
+
 ## Follow-ups / Risks
+
+**Resolved in Session 2:**
+- ✅ "Hidden package" errors eliminated
+- ✅ Multi-REPL behavior clearly documented
+- ✅ Path normalization handles Tab-completion
+
+**Remaining:**
 - User must have GHC 9.6.7 / Cabal 3.12+ installed (not auto-installed by this task)
-- PowerShell wrapper assumes PS 5.1+ (verified working in user's environment)
-- PowerShell profile function created at `$PROFILE` - loads automatically in new sessions
-- Bash wrapper (`hs`) updated with same logic (not tested on Windows Git Bash/WSL)
+- PowerShell wrapper assumes PS 5.1+ (verified working)
+- PowerShell profile function at `$PROFILE` - loads automatically
+- Bash wrapper (`hs`) updated with same logic (not tested on Git Bash/WSL)
+- Multi-REPL mode experimental (Cabal limitation, not wrapper issue)
