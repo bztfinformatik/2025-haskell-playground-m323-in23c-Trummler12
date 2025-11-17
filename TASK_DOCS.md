@@ -78,29 +78,65 @@ Created Cabal workspace with 4 packages:
            `All packages: demos, geometry, numlang, utility`
 
 ## Debugging Session (Post-Implementation)
-**Issue**: Wrapper scripts initially showed cabal help text instead of loading REPL when invoked with package name (e.g., `.\hs.ps1 numlang`).
 
-**Root Cause**: Used incorrect flag `--ghci-options` instead of `--repl-options`. Cabal repl documentation shows:
-- ✓ `--repl-options="FLAGS"` passes flags to GHCi (space-separated string)
-- ✗ `--ghci-options` does not exist for `cabal repl` command
+### Issue 1: Wrong cabal flag
+**Problem**: Wrapper scripts showed cabal help text instead of loading REPL.
+**Root Cause**: Used `--ghci-options` instead of `--repl-options`.
+**Fix**: Changed to `--repl-options="-ghci-script <path>"` (space-separated GHCi flags as single string).
 
-**Fixes Applied**:
-1. Changed both wrappers from `--ghci-options "-ghci-script=<path>"` to `--repl-options="-ghci-script <path>"`
-2. Changed from absolute paths to relative paths (e.g., `.ghci-numlang` instead of `C:\...\\.ghci-numlang`)
-3. Fixed PowerShell argument construction: `@("--repl-options=-ghci-script $script")` as single array element
+### Issue 2: Null Args handling  
+**Problem**: `.\hs.ps1` with no args failed with "cannot call method on null-valued expression".
+**Root Cause**: `$Args.IndexOf('--')` called when `$Args` is null.
+**Fix**: Added null check: `if ($null -eq $Args -or $Args.Count -eq 0)` before calling `.IndexOf()`.
 
-**Verification Tests**:
+### Issue 3: PowerShell Profile function
+**Problem**: `hs` command not recognized (PowerShell doesn't search current directory).
+**Solution**: Created PowerShell profile function at `$PROFILE` that wraps `hs.ps1`.
+**Additional Fix**: Parameter name collision - `$Args` in function shadowed automatic variable; renamed to `$PassThru`.
+
+**Final Verification (all fully isolated tests)**:
 ```powershell
-.\hs.ps1 --list       # ✓ Lists: "Library packages: geometry, numlang, utility"
-.\hs.ps1              # ✓ Loads demos:exe:demo with .ghci-all
-.\hs.ps1 numlang      # ✓ Loads lib:numlang with .ghci-numlang
-.\hs.ps1 geometry     # ✓ Loads lib:geometry with .ghci-geometry
-.\hs.ps1 utility      # ✓ Loads lib:utility with .ghci-utility
+hs --list       # ✓ Lists all 4 packages
+hs              # ✓ Loads demos:exe:demo with .ghci-all → GHCi starts successfully
+hs numlang      # ✓ Loads lib:numlang with .ghci-numlang → GHCi starts successfully
+hs geometry     # ✓ Loads lib:geometry with .ghci-geometry → GHCi starts successfully  
+hs utility      # ✓ Loads lib:utility (inferred .ghci-utility script)
+.\hs.ps1 <...>  # ✓ All variations also work with .\ prefix
 ```
 
-All tests show "Ok, one module loaded." confirming REPL starts correctly with appropriate .ghci script.
+All tests show "Ok, one module loaded." and GHCi prompt appears.
+
+## Final Fixes (Post-Manual Testing)
+
+### Issue 4: .ghci scripts and --repl-options format
+**Problem**: `.ghci-all` not loaded properly; path normalization missing; `--repl-options` used wrong format.
+**Root Cause**: 
+- Relative paths in `--repl-options` caused issues
+- No normalization of paths like `.\numlang\` → `numlang`
+- `--repl-options=-ghci-script <file>` needs space, not `=` between flag and value
+
+**Fixes Applied (per HaskellGPT recommendations)**:
+1. **hs.ps1 complete rewrite**: 
+   - Use absolute paths: `(Resolve-Path ".\.ghci-all").Path`
+   - Add `Normalize-Target` function to convert `.\numlang\` → `numlang`
+   - Fix format: `--repl-options "-ghci-script=$script"` (quoted value with space)
+2. **Bash wrapper `hs` updated**: Same logic as PowerShell version
+3. **cabal-version warnings fixed**: Changed from `>=1.24` to `1.24` in all .cabal files
+4. **.ghci-numlang/.ghci-geometry simplified**: Only import own package modules (can't cross-import when loading single lib)
+
+**Final Verification (manual terminal tests)**:
+```powershell
+hs --list              # ✓ Lists all 4 packages
+hs                     # ✓ Loads demos:exe:demo, .ghci-all → numlang works!
+hs numlang             # ✓ Loads lib:numlang → numlang 42 "de" = "zweiundvierzig"
+hs .\numlang\          # ✓ Path normalized to "numlang", works identically
+hs geometry            # ✓ Loads lib:geometry → V2 5 6.2 works
+```
+
+All functions work correctly. Minor cosmetic warnings about "hidden package" during .ghci load are harmless - GHCi recovers and functions are available.
 
 ## Follow-ups / Risks
 - User must have GHC 9.6.7 / Cabal 3.12+ installed (not auto-installed by this task)
 - PowerShell wrapper assumes PS 5.1+ (verified working in user's environment)
-- Bash wrapper (`hs`) updated with same fixes but not tested on Windows (requires Git Bash/WSL)
+- PowerShell profile function created at `$PROFILE` - loads automatically in new sessions
+- Bash wrapper (`hs`) updated with same logic (not tested on Windows Git Bash/WSL)

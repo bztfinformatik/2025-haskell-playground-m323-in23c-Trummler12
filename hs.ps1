@@ -1,29 +1,57 @@
-param([Parameter(ValueFromRemainingArguments=$true)][string[]]$Args)
+param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
 
 # 1) Cabal-Dateien finden (ohne dist-newstyle)
 $cabals = Get-ChildItem -Path . -Recurse -Depth 2 -Filter *.cabal |
   Where-Object { $_.FullName -notmatch '\\dist-newstyle\\' } |
   Sort-Object FullName
 
-$allPkgs = @(); $libPkgs = @()
+$allPkgs = @()
+$libPkgs = @()
+
 foreach ($c in $cabals) {
-  $name = (Select-String -Path $c.FullName -Pattern '^\s*name:\s*(\S+)' -CaseSensitive:$false |
-           ForEach-Object { $_.Matches[0].Groups[1].Value } | Select-Object -First 1)
+  $nameMatch = Select-String -Path $c.FullName -Pattern '^\s*name:\s*(\S+)' -CaseSensitive:$false |
+               Select-Object -First 1
+  if (-not $nameMatch) { continue }
+  $name = $nameMatch.Matches[0].Groups[1].Value
   if (-not $name) { continue }
+
   $allPkgs += $name
-  if (Select-String -Path $c.FullName -Pattern '^\s*library(\s|$)' -CaseSensitive:$false) {
+
+  $hasLib = Select-String -Path $c.FullName -Pattern '^\s*library(\s|$)' -CaseSensitive:$false |
+            Select-Object -First 1
+  if ($hasLib) {
     $libPkgs += $name
   }
 }
 
-# 2) .ghci-Auswahl (use relative paths to avoid quoting issues)
-function GhciScriptFor {
-  param([string]$pkg)
-  $p = if ($pkg) { ".ghci-$pkg" } else { ".ghci-all" }
-  if (Test-Path $p) { $p } else { ".ghci" }
+# 2) Hilfsfunktionen
+
+# Pfad-Argumente wie ".\numlang\" zu "numlang" normalisieren
+function Normalize-Target([string]$t) {
+  $t = $t.Trim()
+  # führende .\ oder ./ oder ./
+  $t = $t -replace '^[.\\/]+', ''
+  # abschließende \ oder /
+  $t = $t -replace '[\\/]+$', ''
+  return $t
 }
 
-# 3) Helpers
+# passendes .ghci-Skript bestimmen
+$rootGhci = (Resolve-Path ".\.ghci").Path
+function GhciScript-For([string]$pkg) {
+  if ([string]::IsNullOrWhiteSpace($pkg)) {
+    $p = ".\.ghci-all"
+  } else {
+    $p = ".\.ghci-$pkg"
+  }
+  if (Test-Path $p) {
+    return (Resolve-Path $p).Path
+  } else {
+    return $rootGhci
+  }
+}
+
+# 3) Spezial-Flag --list
 if ($Args.Count -eq 1 -and $Args[0] -eq '--list') {
   "Library packages: " + ($libPkgs -join ', ')
   "All packages: " + ($allPkgs -join ', ')
@@ -32,61 +60,35 @@ if ($Args.Count -eq 1 -and $Args[0] -eq '--list') {
 
 $hasDemos = Test-Path ".\demos\demos.cabal"
 
-# Split bei -- (separator for cabal repl passthrough args)
-$sep = $Args.IndexOf('--')
-if ($sep -ge 0) {
-  if ($sep -eq 0) {
-    $head = @()
-    $tail = $Args[1..($Args.Count-1)]
-  } else {
-    $head = $Args[0..($sep-1)]
-    $tail = $Args[($sep+1)..($Args.Count-1)]
-  }
-} else { 
-  $head = $Args
-  $tail = @()
+# 4) Argumente normalisieren (für Paket-Namen)
+$normalized = @()
+foreach ($a in $Args) {
+  $normalized += (Normalize-Target $a)
 }
 
-# Build cabal args with proper -- handling
-function BuildCabalArgs {
-  param([string[]]$baseArgs, [string]$ghciScript, [string[]]$extraArgs)
-  # Use --repl-options to pass flags to GHCi (space-separated string)
-  $result = $baseArgs + @("--repl-options=-ghci-script $ghciScript")
-  if ($extraArgs.Count -gt 0) {
-    $result += '--'
-    $result += $extraArgs
-  }
-  return $result
-}
+# 5) Aufrufe
 
-if ($head.Count -eq 0) {
-  # No target specified: load demos or all libs
-  $script = GhciScriptFor ''
+if ($normalized.Count -eq 0) {
+  # hs  -> Aggregator: demos:exe:demo, sonst Scratch-REPL mit allen Libs
+  $script = GhciScript-For ''
   if ($hasDemos) {
-    $cabalArgs = BuildCabalArgs @('repl', 'demos:exe:demo') $script $tail
-    & cabal @cabalArgs
+    cabal repl 'demos:exe:demo' --repl-options "-ghci-script=$script"
   } elseif ($libPkgs.Count -gt 0) {
-    $cabalArgs = BuildCabalArgs @('repl', '--build-depends', ($libPkgs -join ',')) $script $tail
-    & cabal @cabalArgs
+    $depCsv = ($libPkgs -join ',')
+    cabal repl --build-depends $depCsv --repl-options "-ghci-script=$script"
   } else {
-    Write-Error "Keine Library-Pakete gefunden."; exit 1
+    Write-Error "Keine Library-Pakete gefunden."
+    exit 1
   }
-} else {
-  # Target specified
-  if ($head.Count -eq 1 -and ($allPkgs -contains $head[0])) {
-    # Single package name: load as lib
-    $pkg = $head[0]
-    $script = GhciScriptFor $pkg
-    $cabalArgs = BuildCabalArgs @('repl', "lib:$pkg") $script $tail
-    & cabal @cabalArgs
-  } else {
-    # Multiple args or unknown: pass through to cabal
-    $script = GhciScriptFor ''
-    $cabalArgs = @('repl') + $head + @("--repl-options=-ghci-script $script")
-    if ($tail.Count -gt 0) {
-      $cabalArgs += '--'
-      $cabalArgs += $tail
-    }
-    & cabal @cabalArgs
-  }
+}
+elseif ($normalized.Count -eq 1 -and ($allPkgs -contains $normalized[0])) {
+  # hs numlang  -> lib:numlang
+  $pkg    = $normalized[0]
+  $script = GhciScript-For $pkg
+  cabal repl ("lib:" + $pkg) --repl-options "-ghci-script=$script"
+}
+else {
+  # alles andere direkt an cabal repl durchreichen (z. B. multi-repl-Targets)
+  # hier nur neutrales .ghci verwenden
+  cabal repl @Args --repl-options "-ghci-script=$rootGhci"
 }

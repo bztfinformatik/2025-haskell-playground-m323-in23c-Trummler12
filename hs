@@ -15,10 +15,23 @@ for cabal in "${CABALS[@]}"; do
   fi
 done
 
+# Normalize path arguments like "./numlang/" to "numlang"
+normalizeTarget() {
+  local t="$1"
+  # Strip leading ./ or .\
+  t="${t#./}"
+  t="${t#.\\}"
+  # Strip trailing slashes
+  t="${t%/}"
+  t="${t%\\}"
+  printf '%s\n' "$t"
+}
+
+rootGhci="$(pwd)/.ghci"
 ghciScriptFor() {
   local pkg="${1:-}"
   local p; [[ -n "$pkg" ]] && p=".ghci-$pkg" || p=".ghci-all"
-  [[ -f "$p" ]] && printf '%s\n' "$p" || printf '%s\n' ".ghci"
+  [[ -f "$p" ]] && printf '%s\n' "$(pwd)/$p" || printf '%s\n' "$rootGhci"
 }
 
 if [[ "${1:-}" == "--list" ]]; then
@@ -30,17 +43,20 @@ fi
 if [[ $# -eq 0 ]]; then
   script="$(ghciScriptFor)"
   if [[ -f demos/demos.cabal ]]; then
-    exec cabal repl demos:exe:demo --repl-options "-ghci-script $script"
+    exec cabal repl demos:exe:demo --repl-options "-ghci-script=$script"
   elif [[ ${#LIB_PKGS[@]} -gt 0 ]]; then
-    IFS=, exec cabal repl --build-depends "${LIB_PKGS[*]}" --repl-options "-ghci-script $script"
+    IFS=, exec cabal repl --build-depends "${LIB_PKGS[*]}" --repl-options "-ghci-script=$script"
   else
     echo "Keine Library-Pakete gefunden." >&2; exit 1
   fi
 else
-  if printf '%s\n' "${ALL_PKGS[@]}" | grep -qx -- "$1"; then
-    script="$(ghciScriptFor "$1")"
-    exec cabal repl "lib:$1" --repl-options "-ghci-script $script"
+  # Normalize first argument
+  normalized="$(normalizeTarget "$1")"
+  if printf '%s\n' "${ALL_PKGS[@]}" | grep -qx -- "$normalized"; then
+    script="$(ghciScriptFor "$normalized")"
+    exec cabal repl "lib:$normalized" --repl-options "-ghci-script=$script"
   else
-    exec cabal repl "$@"
+    # Multi-repl or unknown: pass through with neutral .ghci
+    exec cabal repl "$@" --repl-options "-ghci-script=$rootGhci"
   fi
 fi

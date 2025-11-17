@@ -1,3 +1,1 @@
--- Load geometry modules
-:m + Geometry.Vector Utility.GHCiPrint
-:set -interactive-print=Utility.GHCiPrint.iprint
+:m + Geometry.Vector

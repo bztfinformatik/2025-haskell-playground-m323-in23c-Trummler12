@@ -4,14 +4,164 @@ Folder PATH listing for volume Windows
 Volume serial number is AA0F-5FCF
 C:.
 |   .ghci
-|   GHCiPrint.hs
+|   .ghci-all
+|   .ghci-geometry
+|   .ghci-numlang
+|   cabal.project
+|   hs
+|   hs.ps1
 |   local-tree.ps1
 |   local-tree.txt
-|   numlang.hs
 |   README.md
-|   simple.hs
-|   vector.hs
+|   TASK_DOCS.md
+|   TASK_PLAN.md
 |
-\---.github
-        .keep
++---.github
+|       .keep
+|
++---demos
+|   |   demos.cabal
+|   |
+|   \---app
+|           demo.hs
+|
++---dist-newstyle
+|   +---build
+|   |   \---x86_64-windows
+|   |       \---ghc-9.6.7
+|   |           +---demos-0.1.0.0
+|   |           |   \---x
+|   |           |       \---demo
+|   |           |           |   setup-config
+|   |           |           |
+|   |           |           +---build
+|   |           |           |   \---demo
+|   |           |           |       |   demo.exe
+|   |           |           |       |
+|   |           |           |       +---autogen
+|   |           |           |       |       cabal_macros.h
+|   |           |           |       |       PackageInfo_demos.hs
+|   |           |           |       |       Paths_demos.hs
+|   |           |           |       |
+|   |           |           |       \---demo-tmp
+|   |           |           |               Main.hi
+|   |           |           |               Main.o
+|   |           |           |
+|   |           |           +---cache
+|   |           |           |       build
+|   |           |           |       config
+|   |           |           |
+|   |           |           \---package.conf.inplace
+|   |           |                   package.cache
+|   |           |                   package.cache.lock
+|   |           |
+|   |           +---geometry-0.1.0.0
+|   |           |   |   setup-config
+|   |           |   |
+|   |           |   +---build
+|   |           |   |   |   libHSgeometry-0.1.0.0-inplace.a
+|   |           |   |   |
+|   |           |   |   +---autogen
+|   |           |   |   |       cabal_macros.h
+|   |           |   |   |       PackageInfo_geometry.hs
+|   |           |   |   |       Paths_geometry.hs
+|   |           |   |   |
+|   |           |   |   \---Geometry
+|   |           |   |           Vector.hi
+|   |           |   |           Vector.o
+|   |           |   |
+|   |           |   +---cache
+|   |           |   |       build
+|   |           |   |       config
+|   |           |   |
+|   |           |   \---package.conf.inplace
+|   |           |           package.cache
+|   |           |           package.cache.lock
+|   |           |
+|   |           +---numlang-0.1.0.0
+|   |           |   |   setup-config
+|   |           |   |
+|   |           |   +---build
+|   |           |   |   |   libHSnumlang-0.1.0.0-inplace.a
+|   |           |   |   |
+|   |           |   |   +---autogen
+|   |           |   |   |       cabal_macros.h
+|   |           |   |   |       PackageInfo_numlang.hs
+|   |           |   |   |       Paths_numlang.hs
+|   |           |   |   |
+|   |           |   |   \---NumLang
+|   |           |   |           NumLang.hi
+|   |           |   |           NumLang.o
+|   |           |   |
+|   |           |   +---cache
+|   |           |   |       build
+|   |           |   |       config
+|   |           |   |
+|   |           |   \---package.conf.inplace
+|   |           |           package.cache
+|   |           |           package.cache.lock
+|   |           |
+|   |           \---utility-0.1.0.0
+|   |               |   setup-config
+|   |               |
+|   |               +---build
+|   |               |   |   libHSutility-0.1.0.0-inplace.a
+|   |               |   |
+|   |               |   +---autogen
+|   |               |   |       cabal_macros.h
+|   |               |   |       PackageInfo_utility.hs
+|   |               |   |       Paths_utility.hs
+|   |               |   |
+|   |               |   \---Utility
+|   |               |           GHCiPrint.hi
+|   |               |           GHCiPrint.o
+|   |               |
+|   |               +---cache
+|   |               |       build
+|   |               |       config
+|   |               |       registration
+|   |               |
+|   |               \---package.conf.inplace
+|   |                       package.cache
+|   |                       package.cache.lock
+|   |
+|   +---cache
+|   |       compiler
+|   |       config
+|   |       elaborated-plan
+|   |       improved-plan
+|   |       plan.json
+|   |       solver-plan
+|   |       source-hashes
+|   |       up-to-date
+|   |
+|   +---packagedb
+|   |   \---ghc-9.6.7
+|   |           geometry-0.1.0.0-inplace.conf
+|   |           numlang-0.1.0.0-inplace.conf
+|   |           package.cache
+|   |           package.cache.lock
+|   |           utility-0.1.0.0-inplace.conf
+|   |
+|   \---tmp
++---geometry
+|   |   geometry.cabal
+|   |
+|   \---src
+|       \---Geometry
+|               Vector.hs
+|
++---numlang
+|   |   numlang.cabal
+|   |
+|   \---src
+|       \---NumLang
+|               NumLang.hs
+|
+\---utility
+    |   utility.cabal
+    |
+    \---src
+        \---Utility
+                GHCiPrint.hs
 
