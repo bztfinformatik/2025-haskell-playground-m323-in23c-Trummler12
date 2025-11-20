@@ -1,5 +1,27 @@
 param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
 
+<#
+.SYNOPSIS
+  Auto-Discovery Wrapper für Cabal REPL im M323-Haskell Workspace
+
+.DESCRIPTION
+  Routing-Logik:
+    hs                    -> demos:exe:demo + .ghci-all (alle Module: Geometry, NumLang, Utility)
+    hs numlang            -> lib:numlang + .ghci (neutral, Cabal setzt Kontext)
+    hs geometry           -> lib:geometry + .ghci (neutral)
+    hs numlang geometry   -> Multi-REPL (experimental) + .ghci (neutral, manuelle Imports nötig)
+    hs --list             -> Zeigt erkannte Pakete
+
+  .ghci-Skripte:
+    .ghci-all   - Aggregator: importiert alle Module + custom iprint
+    .ghci       - Neutral: nur globale Flags (:set -Wall, Prompt)
+
+.EXAMPLE
+  hs                    # Lädt alles (demos + alle Libs)
+  hs numlang            # Nur NumLang Library
+  hs .\geometry\        # Path-Normalisierung: .\geometry\ -> geometry
+#>
+
 # 1) Cabal-Dateien finden (ohne dist-newstyle)
 $cabals = Get-ChildItem -Path . -Recurse -Depth 2 -Filter *.cabal |
   Where-Object { $_.FullName -notmatch '\\dist-newstyle\\' } |
@@ -39,11 +61,11 @@ function Normalize-Target([string]$t) {
 # passendes .ghci-Skript bestimmen
 $rootGhci = (Resolve-Path "./.ghci").Path
 function GhciScript-For([string]$pkg) {
+  # Aggregator (kein Paket) -> .ghci-all (alle Imports)
+  # Single-Lib (ein Paket)  -> .ghci (neutral, Cabal setzt Kontext)
   if ([string]::IsNullOrWhiteSpace($pkg)) {
-    # Aggregator: use .ghci-all with all imports
     $p = "./.ghci-all"
   } else {
-    # Single lib: use neutral .ghci (Cabal sets context automatically)
     $p = "./.ghci"
   }
   if (Test-Path $p) {

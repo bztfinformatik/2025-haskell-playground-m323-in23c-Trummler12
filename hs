@@ -30,7 +30,9 @@ normalizeTarget() {
 rootGhci="$(pwd)/.ghci"
 ghciScriptFor() {
   local pkg="${1:-}"
-  local p; [[ -n "$pkg" ]] && p=".ghci-$pkg" || p=".ghci-all"
+  # Aggregator (empty pkg) -> .ghci-all (all imports)
+  # Single-lib (one pkg)   -> .ghci (neutral, Cabal sets context)
+  local p; [[ -n "$pkg" ]] && p=".ghci" || p=".ghci-all"
   [[ -f "$p" ]] && printf '%s\n' "$(pwd)/$p" || printf '%s\n' "$rootGhci"
 }
 

@@ -207,12 +207,60 @@ Output: Turkish number rendering ("yuez yirmi uec katrilyon...")
 | Single-lib | `hs geometry` | `.ghci` (neutral) | ✅ Via Cabal | Clean startup |
 | Multi-REPL | `hs pkg1 pkg2` | `.ghci` (neutral) | ❌ Manual required | Experimental, documented |
 
+## Simplifications Applied (Session 3 - 2024-11-20)
+
+After creating `WRAPPER_ANALYSIS.md` with detailed step-by-step documentation, the following simplifications were implemented:
+
+### 1. Removed unnecessary .ghci files
+**Deleted:**
+- `.ghci-numlang` (was only prompt customization)
+- `.ghci-geometry` (was only prompt customization)
+
+**Rationale:** Single-lib targets (`hs numlang`, `hs geometry`) use neutral `.ghci` with only global flags. Cabal automatically sets the module context, so package-specific `.ghci` files are redundant. This reduces maintenance burden (fewer files to manage).
+
+**Impact:**
+- Before: 4 `.ghci` files (`.ghci`, `.ghci-all`, `.ghci-numlang`, `.ghci-geometry`)
+- After: 2 `.ghci` files (`.ghci`, `.ghci-all`)
+- Behavior: Identical (Cabal still loads correct modules)
+
+### 2. Enhanced inline documentation
+**Added to `hs.ps1`:**
+- PowerShell comment-based help block (`.SYNOPSIS`, `.DESCRIPTION`, `.EXAMPLE`)
+- ASCII routing diagram showing all call paths:
+  ```
+  hs                    -> demos:exe:demo + .ghci-all
+  hs numlang            -> lib:numlang + .ghci
+  hs numlang geometry   -> Multi-REPL + .ghci
+  ```
+- Clearer comments in `GhciScript-For` function
+
+**Added to `hs` (bash):**
+- Similar inline comments explaining routing logic
+
+**Impact:** Code is now self-documenting, easier to understand and maintain.
+
+### 3. Verification
+**Tests passed:**
+- ✅ `hs --list` → Shows all 4 packages
+- ✅ `hs numlang` → Loads cleanly without `.ghci-numlang` file
+- ✅ Wrapper behavior identical to pre-simplification
+
+**Files modified:**
+- `hs.ps1` (added documentation, updated comments)
+- `hs` (updated comments, removed `.ghci-<pkg>` reference)
+- Deleted: `.ghci-numlang`, `.ghci-geometry`
+
 ## Follow-ups / Risks
 
 **Resolved in Session 2:**
 - ✅ "Hidden package" errors eliminated
 - ✅ Multi-REPL behavior clearly documented
 - ✅ Path normalization handles Tab-completion
+
+**Resolved in Session 3:**
+- ✅ Unnecessary `.ghci` files removed (2 fewer files to maintain)
+- ✅ Inline documentation added (ASCII routing diagram)
+- ✅ Code is now self-documenting
 
 **Remaining:**
 - User must have GHC 9.6.7 / Cabal 3.12+ installed (not auto-installed by this task)

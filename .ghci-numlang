@@ -1,2 +1,0 @@
--- .ghci-numlang: optional, nur Prompt
-:set prompt "numlang> "

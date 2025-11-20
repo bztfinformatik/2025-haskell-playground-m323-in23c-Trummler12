@@ -1,2 +1,0 @@
--- .ghci-geometry: optional, nur Prompt
-:set prompt "geometry> "

@@ -5,8 +5,6 @@ Volume serial number is AA0F-5FCF
 C:.
 |   .ghci
 |   .ghci-all
-|   .ghci-geometry
-|   .ghci-numlang
 |   cabal.project
 |   hs
 |   hs.ps1
@@ -15,6 +13,7 @@ C:.
 |   README.md
 |   TASK_DOCS.md
 |   TASK_PLAN.md
+|   WRAPPER_ANALYSIS.md
 |
 +---.github
 |       .keep
