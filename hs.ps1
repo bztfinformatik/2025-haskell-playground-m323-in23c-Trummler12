@@ -326,12 +326,13 @@ $cabalProjectPath = Join-Path $projectRoot "cabal.project"
 # Registrierte Packages laden (aber noch nichts ausgeben)
 $knownPkgs = Get-CabalProjectPackages -CabalProjectPath $cabalProjectPath
 
-# 1) Argument-Normalisierung: ./numlang/ -> numlang
+# 1) Argument-Normalisierung:
+#    ./numlang, ./numlang/, .\numlang, .\numlang\  ->  numlang
 if ($Packages -and $Packages.Count -gt 0) {
     $normalized = New-Object System.Collections.Generic.List[string]
     foreach ($p in $Packages) {
-        if ($p -match '^\./(.+)/$' -or $p -match '^\.\\(.+)\\$') {
-            # Tab-Completion-Pfad -> nur der mittlere Teil
+        if ($p -match '^\.[/\\](.+?)[/\\]?$') {
+            # Tab-Completion-Pfad (oder manuell getippter relativer Pfad)
             $normalized.Add($matches[1])
         }
         else {
