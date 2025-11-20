@@ -31,6 +31,7 @@ Für jeden Package-Namen kannst du **jede** der folgenden Formen nutzen:
 .\hs.ps1 numlang geometry
 .\hs.ps1 .\numlang\ .\geometry\
 .\hs.ps1 ./numlang/ ./geometry/
+.\hs.ps1 ./numlang .\geometry
 ```
 
 Alle drei Varianten landen intern wieder bei `numlang` bzw. `geometry` – das Skript normalisiert solche Pfade automatisch.
@@ -101,7 +102,7 @@ passiert intern:
 
 2. **Argumente werden normalisiert**
 
-   * `numlang`, `./numlang/` und `.\numlang\` werden alle als `numlang` interpretiert.
+   * `numlang`, `./numlang/`, `.\numlang\`, `./numlang`, `.\numlang` werden alle als `numlang` interpretiert.
 
 3. **Spezialfälle werden behandelt**
 
@@ -162,12 +163,13 @@ Aus `cd M323-Haskell`:
 .\hs.ps1 numlang
 .\hs.ps1 .\numlang\
 .\hs.ps1 ./numlang/
+.\hs.ps1 .\numlang
 
 # geometry + numlang
 .\hs.ps1 geometry numlang
 
 # 3 Packages mit verschiedenen validen Pfad-Formen
-.\hs.ps1 ./geometry/ numlang .\utility\
+.\hs.ps1 ./geometry/ .\numlang .\utility\
 
 # nur die verfügbaren Packages anzeigen
 .\hs.ps1 --list
