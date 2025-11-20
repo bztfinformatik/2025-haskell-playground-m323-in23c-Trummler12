@@ -1,14 +1,15 @@
 ﻿
 
-Folder PATH listing for volume Windows
-Volume serial number is AA0F-5FCF
+Auflistung der Ordnerpfade f³r Volume WINDOWS
+Volumeseriennummer : 7612-138E
 C:.
+|   .ghci
 |   .gitignore
 |   cabal.project
+|   hs.ps1
 |   local-tree.ps1
 |   local-tree.txt
 |   README.md
-|   TEST-OUTPUT.txt
 |
 +---.github
 |       .keep
@@ -21,9 +22,6 @@ C:.
 |
 +---dist-newstyle
 |       [Contents excluded]
-|
-+---docs
-|       CONFIGURATION.md
 |
 +---geometry
 |   |   geometry.cabal
@@ -54,6 +52,7 @@ C:.
 |   |
 |   \---src
 |       \---Startup
+|               .gitignore
 |               Startup.hs
 |
 \---utility
