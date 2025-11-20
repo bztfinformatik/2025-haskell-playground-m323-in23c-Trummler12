@@ -1,0 +1,557 @@
+PS C:\Users\tobia\Documents\GitHub\ProgrammierZeugs> & C:/Users/tobia/Documents/GitHub/ProgrammierZeugs/.venv/Scripts/Activate.ps1
+(.venv) PS C:\Users\tobia\Documents\GitHub\ProgrammierZeugs> cd .\M323-Haskell
+(.venv) PS C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell> cabal build startup           
+Resolving dependencies...
+Up to date
+(.venv) PS C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell> cabal run startup -- geometry numlang
+Starte: cabal repl --enable-multi-repl lib:geometry lib:numlang --repl-options -ghci-script=.m323-ghci.ghci
+Resolving dependencies...
+Build profile: -w ghc-9.6.7 -O1
+In order, the following will be built (use -v for more details):
+ - geometry-0.1.0.0 (interactive) (lib) (first run)
+ - numlang-0.1.0.0 (interactive) (lib) (first run)
+Preprocessing library for geometry-0.1.0.0...
+Preprocessing library for numlang-0.1.0.0...
+GHCi, version 9.6.7: https://www.haskell.org/ghc/  :? for help
+
+<no location info>: error:
+    Could not load module `NumLang.NumLang'
+    It is a member of the hidden package `numlang-0.1.0.0'.
+    Perhaps you need to add `numlang' to the build-depends in your .cabal file.
+
+<no location info>: error:
+    Could not load module `Geometry.Vector'
+    It is a member of the hidden package `geometry-0.1.0.0'.
+    Perhaps you need to add `geometry' to the build-depends in your .cabal file.
+Loaded GHCi configuration from .m323-ghci.ghci
+[1 of 2] Compiling Geometry.Vector  ( C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs, interpreted )[geometry-0.1.0.0-inplace] [Flags changed]
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:15:1: warning: [-Wunused-imports]
+    The import of `Data.Time' is redundant
+      except perhaps to import instances from `Data.Time'
+    To import instances alone, use: import Data.Time()
+   |
+15 | import Data.Time (scaleCalendarDiffDays)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:27: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `b0' to type `Integer' in the following constraints
+        (Integral b0)
+          arising from a use of `^'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:27
+        (Num b0)
+          arising from the literal `2'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:28
+    * In the first argument of `(+)', namely `x ^ 2'
+      In the first argument of `sqrt', namely `(x ^ 2 + y ^ 2)'
+      In the expression: sqrt (x ^ 2 + y ^ 2)
+   |
+28 | vlength (V2 x y) = sqrt (x^2 + y^2)
+   |                           ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:33: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `b0' to type `Integer' in the following constraints
+        (Integral b0)
+          arising from a use of `^'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:33
+        (Num b0)
+          arising from the literal `2'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:34
+    * In the second argument of `(+)', namely `y ^ 2'
+      In the first argument of `sqrt', namely `(x ^ 2 + y ^ 2)'
+      In the expression: sqrt (x ^ 2 + y ^ 2)
+   |
+28 | vlength (V2 x y) = sqrt (x^2 + y^2)
+   |                                 ^
+[2 of 2] Compiling NumLang.NumLang  ( C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs, interpreted )[numlang-0.1.0.0-inplace] [Flags changed]
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:117:16: warning: [GHC-62161] [-Wincomplete-uni-patterns]
+    Pattern match(es) are non-exhaustive
+    In a pattern binding:
+        Patterns of type `([Char], [Char])' not matched:
+            (_, [])
+            (_, [])
+    |
+117 |            let (a, _:b) = break (=='.') string
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:278:10: warning: [-Wunused-matches]
+    Defined but not used: `n'
+    |
+278 | groups 0 n = []
+    |          ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:53: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:53
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:52-56
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups x 3) [0 .. ]
+    |
+288 |       [groupWords g i | (g, i) <- zip (groups x 3) [0..], g > 0]
+    |                                                     ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:53: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `p0' to type `Integer' in the following constraints
+        (Num p0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:53
+        (Enum p0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:52-56
+        (Integral p0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+341 |       [groupWords g i | (g, i) <- zip (groups n 3) [0..], g > 0]
+    |                                                     ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:52
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:51-55
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+378 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:443:53: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `b0' to type `Integer' in the following constraints
+        (Num b0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:443:53
+        (Enum b0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:443:52-56
+        (Integral b0)
+          arising from a use of `build'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:444:18-22
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+443 |       let gis = [(g,i) | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                     ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:25: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:25
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:11-20
+    * In the second argument of `groupWords', namely `0'
+      In the first argument of `(:)', namely `groupWords g0 0'
+      In the expression:
+        groupWords g0 0 : ("e" : groupWords g1 1 : build rest)
+    |
+449 |           groupWords g0 0 : ("e" : groupWords g1 1 : build rest)
+    |                         ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:50: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `1'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:50
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:36-45
+    * In the second argument of `groupWords', namely `1'
+      In the first argument of `(:)', namely `groupWords g1 1'
+      In the second argument of `(:)', namely
+        `groupWords g1 1 : build rest'
+    |
+449 |           groupWords g0 0 : ("e" : groupWords g1 1 : build rest)
+    |                                                  ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:470:14: warning: [GHC-63397] [-Wname-shadowing]
+    This binding for `r' shadows the existing binding
+      bound at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:474:9
+    |
+470 |       let (h,r) = n `divMod` 100
+    |              ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:52
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:51-55
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+503 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:532:14: warning: [GHC-63397] [-Wname-shadowing]
+    This binding for `r' shadows the existing binding
+      bound at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:535:9
+    |
+532 |       let (h,r) = n `divMod` 100
+    |              ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:52
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:51-55
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+565 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `p0' to type `Integer' in the following constraints
+        (Num p0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:52
+        (Enum p0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:51-55
+        (Integral p0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+621 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:672:14: warning: [GHC-63397] [-Wname-shadowing]
+    This binding for `hourZero' shadows the existing binding
+      defined at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:667:1
+    |
+672 | numlangJP2 n hourZero
+    |              ^^^^^^^^
+Ok, two modules loaded.
+ghci> numlang 438 "de"
+
+<interactive>:1:1: error: [GHC-88464]
+    Variable not in scope: numlang :: t0 -> t1 -> t
+ghci> vadd (V2 2 4) (V2 8 1)
+V2 10.0 5.0
+ghci> :q
+Leaving GHCi.
+(.venv) PS C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell> cabal run startup -- numlang geometry
+Resolving dependencies...
+Starte: cabal repl --enable-multi-repl lib:numlang lib:geometry --repl-options -ghci-script=.m323-ghci.ghci
+Resolving dependencies...
+Build profile: -w ghc-9.6.7 -O1
+In order, the following will be built (use -v for more details):
+ - geometry-0.1.0.0 (interactive) (lib) (first run)
+ - numlang-0.1.0.0 (interactive) (lib) (first run)
+Preprocessing library for geometry-0.1.0.0...
+Preprocessing library for numlang-0.1.0.0...
+GHCi, version 9.6.7: https://www.haskell.org/ghc/  :? for help
+
+<no location info>: error:
+    Could not load module `NumLang.NumLang'
+    It is a member of the hidden package `numlang-0.1.0.0'.
+    Perhaps you need to add `numlang' to the build-depends in your .cabal file.
+
+<no location info>: error:
+    Could not load module `Geometry.Vector'
+    It is a member of the hidden package `geometry-0.1.0.0'.
+    Perhaps you need to add `geometry' to the build-depends in your .cabal file.
+Loaded GHCi configuration from .m323-ghci.ghci
+[1 of 2] Compiling Geometry.Vector  ( C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs, interpreted )[geometry-0.1.0.0-inplace] [Flags changed]
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:15:1: warning: [-Wunused-imports]
+    The import of `Data.Time' is redundant
+      except perhaps to import instances from `Data.Time'
+    To import instances alone, use: import Data.Time()
+   |
+15 | import Data.Time (scaleCalendarDiffDays)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:27: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `b0' to type `Integer' in the following constraints
+        (Integral b0)
+          arising from a use of `^'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:27
+        (Num b0)
+          arising from the literal `2'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:28
+    * In the first argument of `(+)', namely `x ^ 2'
+      In the first argument of `sqrt', namely `(x ^ 2 + y ^ 2)'
+      In the expression: sqrt (x ^ 2 + y ^ 2)
+   |
+28 | vlength (V2 x y) = sqrt (x^2 + y^2)
+   |                           ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:33: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `b0' to type `Integer' in the following constraints
+        (Integral b0)
+          arising from a use of `^'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:33
+        (Num b0)
+          arising from the literal `2'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\geometry\src\Geometry\Vector.hs:28:34
+    * In the second argument of `(+)', namely `y ^ 2'
+      In the first argument of `sqrt', namely `(x ^ 2 + y ^ 2)'
+      In the expression: sqrt (x ^ 2 + y ^ 2)
+   |
+28 | vlength (V2 x y) = sqrt (x^2 + y^2)
+   |                                 ^
+[2 of 2] Compiling NumLang.NumLang  ( C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs, interpreted )[numlang-0.1.0.0-inplace] [Flags changed]
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:117:16: warning: [GHC-62161] [-Wincomplete-uni-patterns]
+    Pattern match(es) are non-exhaustive
+    In a pattern binding:
+        Patterns of type `([Char], [Char])' not matched:
+            (_, [])
+            (_, [])
+    |
+117 |            let (a, _:b) = break (=='.') string
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:278:10: warning: [-Wunused-matches]
+    Defined but not used: `n'
+    |
+278 | groups 0 n = []
+    |          ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:53: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:53
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:52-56
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:288:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups x 3) [0 .. ]
+    |
+288 |       [groupWords g i | (g, i) <- zip (groups x 3) [0..], g > 0]
+    |                                                     ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:53: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `p0' to type `Integer' in the following constraints
+        (Num p0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:53
+        (Enum p0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:52-56
+        (Integral p0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:341:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+341 |       [groupWords g i | (g, i) <- zip (groups n 3) [0..], g > 0]
+    |                                                     ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:52
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:51-55
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:378:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+378 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:443:53: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `b0' to type `Integer' in the following constraints
+        (Num b0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:443:53
+        (Enum b0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:443:52-56
+        (Integral b0)
+          arising from a use of `build'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:444:18-22
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+443 |       let gis = [(g,i) | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                     ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:25: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:25
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:11-20
+    * In the second argument of `groupWords', namely `0'
+      In the first argument of `(:)', namely `groupWords g0 0'
+      In the expression:
+        groupWords g0 0 : ("e" : groupWords g1 1 : build rest)
+    |
+449 |           groupWords g0 0 : ("e" : groupWords g1 1 : build rest)
+    |                         ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:50: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `1'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:50
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:449:36-45
+    * In the second argument of `groupWords', namely `1'
+      In the first argument of `(:)', namely `groupWords g1 1'
+      In the second argument of `(:)', namely
+        `groupWords g1 1 : build rest'
+    |
+449 |           groupWords g0 0 : ("e" : groupWords g1 1 : build rest)
+    |                                                  ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:470:14: warning: [GHC-63397] [-Wname-shadowing]
+    This binding for `r' shadows the existing binding
+      bound at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:474:9
+    |
+470 |       let (h,r) = n `divMod` 100
+    |              ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:52
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:51-55
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:503:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+503 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:532:14: warning: [GHC-63397] [-Wname-shadowing]
+    This binding for `r' shadows the existing binding
+      bound at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:535:9
+    |
+532 |       let (h,r) = n `divMod` 100
+    |              ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (Num a0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:52
+        (Enum a0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:51-55
+        (Integral a0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:565:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+565 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:52: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `p0' to type `Integer' in the following constraints
+        (Num p0)
+          arising from the literal `0'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:52
+        (Enum p0)
+          arising from the arithmetic sequence `0 .. '
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:51-55
+        (Integral p0)
+          arising from a use of `groupWords'
+          at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:621:8-17
+    * In the expression: 0
+      In the second argument of `zip', namely `[0 .. ]'
+      In the expression: zip (groups n 3) [0 .. ]
+    |
+621 |       [groupWords g i | (g,i) <- zip (groups n 3) [0..], g > 0]
+    |                                                    ^
+
+C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:672:14: warning: [GHC-63397] [-Wname-shadowing]
+    This binding for `hourZero' shadows the existing binding
+      defined at C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell\numlang\src\NumLang\NumLang.hs:667:1
+    |
+672 | numlangJP2 n hourZero
+    |              ^^^^^^^^
+Ok, two modules loaded.
+ghci> numlang 438 "de"      
+
+<interactive>:1:1: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (NumLang a0) arising from a use of `numlang' at <interactive>:1:1-7
+        (Num a0) arising from the literal `438' at <interactive>:1:9-11
+    * In the expression: numlang 438 "de"
+      In an equation for `it': it = numlang 438 "de"
+
+<interactive>:1:1: warning: [GHC-18042] [-Wtype-defaults]
+    * Defaulting the type variable `a0' to type `Integer' in the following constraints
+        (NumLang a0) arising from a use of `numlang' at <interactive>:1:1-7
+        (Num a0) arising from the literal `438' at <interactive>:1:9-11
+    * In the expression: numlang 438 "de"
+      In an equation for `it': it = numlang 438 "de"
+"vierhundertachtunddreissig"
+ghci> vadd (V2 2 4) (V2 8 1)
+
+<interactive>:2:1: error: [GHC-88464]
+    Variable not in scope: vadd :: t4 -> t5 -> t
+
+<interactive>:2:7: error: [GHC-88464]
+    Data constructor not in scope: V2 :: t2 -> t3 -> t4
+
+<interactive>:2:16: error: [GHC-88464]
+    Data constructor not in scope: V2 :: t0 -> t1 -> t5
+ghci> :q
+Leaving GHCi.
+(.venv) PS C:\Users\tobia\Documents\GitHub\ProgrammierZeugs\M323-Haskell>

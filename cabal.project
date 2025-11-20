@@ -3,6 +3,7 @@ packages:
   numlang/
   utility/
   demos/
+  startup/
 
 -- Enable multi-repl for convenience
 multi-repl: True

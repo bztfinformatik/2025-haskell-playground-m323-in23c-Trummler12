@@ -1,2 +1,0 @@
-:m + Geometry.Vector NumLang.NumLang Utility.GHCiPrint
-:set -interactive-print=Utility.GHCiPrint.iprint
