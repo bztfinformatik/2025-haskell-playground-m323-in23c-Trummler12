@@ -1,0 +1,64 @@
+﻿
+
+Auflistung der Ordnerpfade f³r Volume WINDOWS
+Volumeseriennummer : 7612-138E
+C:.
+|   .ghci
+|   .gitignore
+|   cabal.project
+|   hs.ps1
+|   local-tree.ps1
+|   local-tree.txt
+|   README.md
+|
++---.github
+|       .keep
+|
++---demos
+|   |   demos.cabal
+|   |
+|   \---app
+|           demo.hs
+|
++---dist-newstyle
+|       [Contents excluded]
+|
++---geometry
+|   |   geometry.cabal
+|   |
+|   \---src
+|       \---Geometry
+|           |   Vector.hs
+|           |
+|           \---Figures
+|               +---threeD
+|               |       Cube.hs
+|               |       Sphere.hs
+|               |
+|               \---twoD
+|                       Circle.hs
+|                       Rectangle.hs
+|                       Square.hs
+|
++---numlang
+|   |   numlang.cabal
+|   |
+|   \---src
+|       \---NumLang
+|               NumLang.hs
+|
++---startup
+|   |   startup.cabal
+|   |
+|   \---src
+|       \---Startup
+|               .gitignore
+|               Startup.hs
+|
+\---utility
+    |   utility.cabal
+    |
+    \---src
+        \---Utility
+                GHCiPrint.hs
+

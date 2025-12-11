@@ -1,3 +1,5 @@
+module Main (main) where
+
 -- Return the third element of a triple
 -- Elements of triple can be of different types
 third :: (a ,b, c) -> c
@@ -63,3 +65,5 @@ num2wordDeOrEn 2 "en" = "two"
 num2wordDeOrEn 3 "en" = "three"
 num2wordDeOrEn n _ = show n  
 
+main :: IO ()
+main = pure ()
