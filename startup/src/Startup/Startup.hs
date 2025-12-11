@@ -1,7 +1,5 @@
 ﻿module Startup.Startup
-  ( module NumLang.NumLang
-  , module Geometry.Vector
+  ( module Math.Series
   ) where
 
-import NumLang.NumLang
-import Geometry.Vector
+import Math.Series

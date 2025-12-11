@@ -316,12 +316,248 @@ function Invoke-CabalReplStartup {
     }
 }
 
+#---------------------------
+# Helper: discover workspace packages with a library stanza
+#---------------------------
+function Get-WorkspaceLibraryPackages {
+    param(
+        [Parameter(Mandatory)]
+        [string] $ProjectRoot
+    )
+
+    $cabalFiles =
+        Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter "*.cabal" |
+        Where-Object {
+            $_.FullName -notmatch "\\dist-newstyle\\" -and
+            $_.Name -ne "startup.cabal"
+        }
+
+    $packageNames = New-Object System.Collections.Generic.List[string]
+
+    foreach ($file in $cabalFiles) {
+        $lines = Get-Content -LiteralPath $file.FullName
+
+        $pkgName = $null
+        $hasLibrary = $false
+
+        foreach ($line in $lines) {
+            $trim = $line.Trim()
+
+            if ($trim -like "--*") { continue }
+
+            if (-not $pkgName -and $trim -match '^name\s*:\s*([A-Za-z0-9_.-]+)') {
+                $pkgName = $matches[1]
+            }
+
+            if (-not $hasLibrary -and $line -match '^\s*library\b') {
+                $hasLibrary = $true
+            }
+
+            if ($pkgName -and $hasLibrary) { break }
+        }
+
+        if ($hasLibrary -and $pkgName -and -not ($packageNames -contains $pkgName)) {
+            $packageNames.Add($pkgName)
+        }
+    }
+
+    return $packageNames.ToArray()
+}
+
+#---------------------------
+# Helper: sync startup/startup.cabal build-depends
+#---------------------------
+function Update-StartupBuildDepends {
+    param(
+        [Parameter(Mandatory)]
+        [string] $ProjectRoot,
+
+        [Parameter(Mandatory)]
+        [string[]] $PackageNames
+    )
+
+    $startupCabal = Join-Path $ProjectRoot "startup\startup.cabal"
+    if (-not (Test-Path $startupCabal)) {
+        Write-Warn "startup.cabal nicht gefunden -> uberspringe build-depends Sync."
+        return
+    }
+
+    $lines = Get-Content -LiteralPath $startupCabal
+
+    $buildIndex = $null
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^\s*build-depends\s*:') {
+            $buildIndex = $i
+            break
+        }
+    }
+
+    if ($buildIndex -eq $null) {
+        Write-Warn "Keine build-depends Sektion in startup.cabal gefunden."
+        return
+    }
+
+    $entries = New-Object System.Collections.Generic.List[pscustomobject]
+
+    function AddEntriesFromText {
+        param(
+            [Parameter(Mandatory)]
+            [string] $Text,
+            [System.Collections.Generic.List[pscustomobject]] $Target
+        )
+
+        if ([string]::IsNullOrWhiteSpace($Text)) { return }
+
+        foreach ($piece in ($Text -split ",")) {
+            $entry = $piece.Trim()
+            if ($entry -eq "") { continue }
+
+            if ($entry -match '^([A-Za-z0-9_.-]+)(.*)$') {
+                $name = $matches[1]
+                $constraint = $matches[2].Trim()
+                $Target.Add([pscustomobject]@{
+                    Name       = $name
+                    Constraint = $constraint
+                })
+            }
+        }
+    }
+
+    $lineAfterColon = ($lines[$buildIndex] -split ":", 2)[1]
+    AddEntriesFromText -Text $lineAfterColon -Target $entries
+
+    $endIndex = $buildIndex
+    for ($j = $buildIndex + 1; $j -lt $lines.Count; $j++) {
+        $line = $lines[$j]
+
+        if ($line -match '^\s*$') { break }
+        if ($line -match '^\s*[A-Za-z0-9_.-]+\s*:') { break }
+
+        $endIndex = $j
+
+        $trimmed = $line.TrimStart()
+        if ($trimmed.StartsWith(",")) {
+            $trimmed = $trimmed.Substring(1)
+        }
+
+        AddEntriesFromText -Text $trimmed -Target $entries
+    }
+
+    $workspaceSet = New-Object System.Collections.Generic.HashSet[string]
+    foreach ($p in $PackageNames) { [void]$workspaceSet.Add($p) }
+
+    $already = New-Object System.Collections.Generic.HashSet[string]
+    $newDeps = New-Object System.Collections.Generic.List[pscustomobject]
+
+    $baseDep = $entries | Where-Object { $_.Name -eq "base" } | Select-Object -First 1
+    if ($baseDep) {
+        $newDeps.Add($baseDep)
+        [void]$already.Add("base")
+    }
+
+    foreach ($dep in $entries) {
+        if ($dep.Name -eq "base") { continue }
+
+        if ($workspaceSet.Contains($dep.Name)) {
+            if (-not $already.Contains($dep.Name)) {
+                $newDeps.Add($dep)
+                [void]$already.Add($dep.Name)
+            }
+            $workspaceSet.Remove($dep.Name) | Out-Null
+        }
+        else {
+            Write-Warn ("Entferne ungültiges Package aus build-depends: {0}" -f $dep.Name)
+        }
+    }
+
+    foreach ($pkg in $workspaceSet) {
+        $newDeps.Add([pscustomobject]@{
+            Name       = $pkg
+            Constraint = ""
+        })
+        [void]$already.Add($pkg)
+    }
+
+    if ($newDeps.Count -eq 0) {
+        Write-Warn "Keine Dependencies mehr übrig -> build-depends wird nicht geändert."
+        return
+    }
+
+    # Align first entry with the value column of the previous stanza (colon alignment)
+    $buildLabel = "  build-depends:"
+
+    function Get-ValueStartColumn {
+        param([string]$Line)
+
+        if (-not $Line) { return $null }
+        $colon = $Line.IndexOf(":")
+        if ($colon -lt 0) { return $null }
+
+        $idx = $colon + 1
+        while ($idx -lt $Line.Length -and $Line[$idx] -eq " ") { $idx++ }
+        return $idx
+    }
+
+    $prevLineWithColon = $null
+    for ($b = $buildIndex - 1; $b -ge 0; $b--) {
+        if ($lines[$b] -match ":") { $prevLineWithColon = $lines[$b]; break }
+    }
+
+    $valueColumn = Get-ValueStartColumn -Line $prevLineWithColon
+    if ($valueColumn -eq $null -or $valueColumn -lt $buildLabel.Length + 1) {
+        $valueColumn = $buildLabel.Length + 2  # default padding
+    }
+
+    $padSpaces = $valueColumn - $buildLabel.Length
+    if ($padSpaces -lt 1) { $padSpaces = 1 }
+
+    $indentFirst = $buildLabel + (" " * $padSpaces)
+
+    $restSpaces = $indentFirst.Length - 2  # so that ", " brings text to same column
+    if ($restSpaces -lt 0) { $restSpaces = 0 }
+    $indentRest = (" " * $restSpaces) + ", "
+
+    $depLines = New-Object System.Collections.Generic.List[string]
+    for ($k = 0; $k -lt $newDeps.Count; $k++) {
+        $dep = $newDeps[$k]
+        $constraintText = ""
+        if (-not [string]::IsNullOrWhiteSpace($dep.Constraint)) {
+            $constraintText = " " + $dep.Constraint
+        }
+
+        if ($k -eq 0) {
+            $depLines.Add("$indentFirst$($dep.Name)$constraintText")
+        }
+        else {
+            $depLines.Add("$indentRest$($dep.Name)$constraintText")
+        }
+    }
+
+    $before = @()
+    if ($buildIndex -gt 0) {
+        $before = $lines[0..($buildIndex - 1)]
+    }
+
+    $after = @()
+    if ($endIndex -lt ($lines.Count - 1)) {
+        $after = $lines[($endIndex + 1)..($lines.Count - 1)]
+    }
+
+    $before + $depLines + $after | Set-Content -LiteralPath $startupCabal -Encoding UTF8
+
+    Write-Info ("startup.cabal build-depends synchronisiert: {0}" -f ($newDeps.Name -join ", "))
+}
+
 #===========================
 # MAIN
 #===========================
 
 $projectRoot = (Get-Location).ProviderPath
 $cabalProjectPath = Join-Path $projectRoot "cabal.project"
+
+# Sync startup/startup.cabal build-depends to include all workspace library packages
+$workspacePackages = Get-WorkspaceLibraryPackages -ProjectRoot $projectRoot
+Update-StartupBuildDepends -ProjectRoot $projectRoot -PackageNames $workspacePackages
 
 # Registrierte Packages laden (aber noch nichts ausgeben)
 $knownPkgs = Get-CabalProjectPackages -CabalProjectPath $cabalProjectPath

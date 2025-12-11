@@ -1,8 +1,9 @@
 packages:
+  demos/
   geometry/
+  math/
   numlang/
   utility/
-  demos/
   startup/
 
 -- Enable multi-repl for convenience
