@@ -1,119 +1,107 @@
 -- Vektor-Modul; Die Übung sieht vor, dass wir stets 2-dimensionale Vektoren verwenden, ich möchte die Dimensionalität jedoch nach oben offen halten;
 -- Zudem will ich keinen bereits vorgefertigten Datentyp "Vektor" verwenden, sondern einen eigenen definieren mit Namen "vec"
 -- Mögliche Eingaben: "vprint vsub (Vec 2 4 7) (Vec 1 2 3)" => "[1 2 4]"; "vprint vlength (Vec 3 4)" => "5.0"; "vprint vscale 2 (Vec 1 2 3)" => "[2 4 6]"
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE UndecidableInstances #-}
 
 module Geometry.Vector where
 
-import GHC.Exts     (Constraint)
-import GHC.TypeLits (TypeError, ErrorMessage(..))
-import Data.Time (scaleCalendarDiffDays)
+import Data.Kind (Type)
+import GHC.TypeLits (Nat, type (+))
+import Unsafe.Coerce (unsafeCoerce)
 
-data V2 where
-  V2 :: Double -> Double -> V2
-  deriving (Show)
+-- | Length-indexed vector.
+--   The length is tracked at the type level (Nat).
+data Vec :: Nat -> Type -> Type where
+  VNil :: Vec 0 a
+  (:>) :: a -> Vec n a -> Vec (n + 1) a
+infixr 5 :>
 
-vadd :: V2 -> V2 -> V2
-vadd (V2 x1 y1) (V2 x2 y2) = V2 (x1 + x2) (y1 + y2)
+deriving instance Show a => Show (Vec n a)
 
-vsub :: V2 -> V2 -> V2
-vsub (V2 x1 y1) (V2 x2 y2) = V2 (x1 - x2) (y1 - y2)
+--------------------------------------------------------------------------------
+-- Pattern synonyms for nice construction / display
 
-vlength :: V2 -> Double
-vlength (V2 x y) = sqrt (x^2 + y^2)
+type V2 a = Vec 2 a
+type V3 a = Vec 3 a
+type V4 a = Vec 4 a
+type V5 a = Vec 5 a
+type V6 a = Vec 6 a
+type V7 a = Vec 7 a
+type V8 a = Vec 8 a
+type V9 a = Vec 9 a
+type V10 a = Vec 10 a
 
-vunit :: V2 -> V2
-vunit (V2 x y)
-  | len == 0  = error "vunit: zero vector"
-  | otherwise = V2 (x/len) (y/len)
-  where len = vlength (V2 x y)
+pattern V2 :: a -> a -> V2 a
+pattern V2 x y = x :> y :> VNil
+pattern V3 :: a -> a -> a -> V3 a
+pattern V3 x y z = x :> y :> z :> VNil
+pattern V4 :: a -> a -> a -> a -> V4 a
+pattern V4 a b c d = a :> b :> c :> d :> VNil
+pattern V5 :: a -> a -> a -> a -> a -> V5 a
+pattern V5 a b c d e = a :> b :> c :> d :> e :> VNil
+pattern V6 :: a -> a -> a -> a -> a -> a -> V6 a
+pattern V6 a b c d e f = a :> b :> c :> d :> e :> f :> VNil
+pattern V7 :: a -> a -> a -> a -> a -> a -> a -> V7 a
+pattern V7 a b c d e f g = a :> b :> c :> d :> e :> f :> g :> VNil
+pattern V8 :: a -> a -> a -> a -> a -> a -> a -> a -> V8 a
+pattern V8 a b c d e f g h = a :> b :> c :> d :> e :> f :> g :> h :> VNil
+pattern V9 :: a -> a -> a -> a -> a -> a -> a -> a -> a -> V9 a
+pattern V9 a b c d e f g h i = a :> b :> c :> d :> e :> f :> g :> h :> i :> VNil
+pattern V10 :: a -> a -> a -> a -> a -> a -> a -> a -> a -> a -> V10 a
+pattern V10 a b c d e f g h i j = a :> b :> c :> d :> e :> f :> g :> h :> i :> j :> VNil
 
--- =========================================================
--- vmult in beiden Argument-Reihenfolgen
--- =========================================================
+{-# COMPLETE VNil, (:>) #-}
+{-# COMPLETE V2 #-}
+{-# COMPLETE V3 #-}
+{-# COMPLETE V4 #-}
+{-# COMPLETE V5 #-}
+{-# COMPLETE V6 #-}
+{-# COMPLETE V7 #-}
+{-# COMPLETE V8 #-}
+{-# COMPLETE V9 #-}
+{-# COMPLETE V10 #-}
 
--- Nutzer soll entweder vmult :: Double -> V2 -> V2 ODER vmult :: V2 -> Double -> V2 eingeben dürfen:
-type family VmultOK a b :: Constraint where
-  VmultOK Double V2 = ()
-  VmultOK V2     Double = ()
-  VmultOK a b =
-    TypeError ('Text "vmult: unsupported argument types: "
-               ':<>: 'ShowType a ':<>: 'Text ", "
-               ':<>: 'ShowType b ':$$:
-               'Text "Use (Double,V2) or (V2,Double).")
+--------------------------------------------------------------------------------
+-- Core combinators
 
-class VMult a b where
-  vmult :: VmultOK a b => a -> b -> V2
+vmap :: (a -> b) -> Vec n a -> Vec n b
+vmap _ VNil      = VNil
+vmap f (x :> xs) = f x :> vmap f xs
 
-instance VMult Double V2 where
-  vmult scalar (V2 x y) = V2 (scalar*x) (scalar*y)
-instance VMult V2 Double where
-  vmult (V2 x y) scalar = vmult scalar (V2 x y)
+vzipWith :: (a -> b -> c) -> Vec n a -> Vec n b -> Vec n c
+vzipWith _ VNil      VNil      = VNil
+vzipWith _ VNil      (_ :> _)  = error "vzipWith: impossible"
+vzipWith _ (_ :> _)  VNil      = error "vzipWith: impossible"
+vzipWith f (x :> xs) (y :> ys) = f x y :> vzipWith f xs (unsafeCoerce ys)
 
--- =========================================================
--- vunitmult in beiden Reihenfolgen
--- =========================================================
+--------------------------------------------------------------------------------
+-- Numeric operations
 
-type family VUMOK a b :: Constraint where
-  VUMOK Double V2 = ()
-  VUMOK V2     Double = ()
-  VUMOK a b =
-    TypeError ('Text "vunitmult: unsupported argument types: "
-               ':<>: 'ShowType a ':<>: 'Text ", "
-               ':<>: 'ShowType b ':$$:
-               'Text "Use (Double,V2) or (V2,Double).")
+vadd :: Num a => Vec n a -> Vec n a -> Vec n a
+vadd = vzipWith (+)
 
-class VUnitMult a b where
-  vunitmult :: VUMOK a b => a -> b -> V2
+vsub :: Num a => Vec n a -> Vec n a -> Vec n a
+vsub = vzipWith (-)
 
-instance VUnitMult Double V2 where
-  vunitmult s v = vmult s (vunit v)
-instance VUnitMult V2 Double where
-  vunitmult v s = vunitmult s v
+vdot :: Num a => Vec n a -> Vec n a -> a
+vdot VNil      VNil      = 0
+vdot VNil      (_ :> _)  = error "vdot: impossible"
+vdot (_ :> _)  VNil      = error "vdot: impossible"
+vdot (x :> xs) (y :> ys) = x * y + vdot xs (unsafeCoerce ys)
 
--- =========================================================
--- vrotate in beiden Reihenfolgen (Winkel in Grad)
--- =========================================================
+vlength :: Floating a => Vec n a -> a
+vlength v = sqrt (vdot v v)
 
-type family VROK a b :: Constraint where
-  VROK Double V2 = ()
-  VROK V2     Double = ()
-  VROK a b =
-    TypeError ('Text "vrotate: unsupported argument types: "
-               ':<>: 'ShowType a ':<>: 'Text ", "
-               ':<>: 'ShowType b ':$$:
-               'Text "Use (Double,V2) or (V2,Double).")
-
-class VRotate a b where
-  vrotate :: VROK a b => a -> b -> V2
-
-instance VRotate Double V2 where
-  vrotate angle (V2 x y) =
-    let rad = angle * (pi / 180)
-        c   = cos rad
-        s   = sin rad
-    in V2 (x*c - y*s) (x*s + y*c)
-
-instance VRotate V2 Double where
-  vrotate v angle = vrotate angle v
-
-
-
-data Square where
-  Square :: V2 -> V2 -> Square
-  deriving (Show)
-
-data Rectangle where
-  Rectangle :: V2 -> V2 -> Double -> Rectangle
-  deriving (Show)
-
-data TriangleEquilateral where
-  TriangleEquilateral :: V2 -> V2 -> TriangleEquilateral
-  deriving (Show)
-
-
+-- | Unit vector.
+--   Uses 'Either' instead of 'error' so callers must handle the zero-vector case.
+vunit :: (Eq a, Floating a) => Vec n a -> Either String (Vec n a)
+vunit v
+  | len == 0  = Left "vunit: zero vector"
+  | otherwise = Right (vmap (/ len) v)
+  where
+    len = vlength v

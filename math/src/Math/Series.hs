@@ -1,5 +1,13 @@
 module Math.Series where
 
+-- SECTIONS:
+--   nd numbers
+--   2d numbers
+--   3d numbers
+--     3d pyramidal numbers
+--     (TO-DO: 3d Prism numbers)
+-- Subsections for each Section: singular, series, singularRoot, series of roots
+
 -- cube root helper
 realCbrt :: (Ord a, Floating a) => a -> a
 realCbrt x = signum x * abs x ** (1/3)
