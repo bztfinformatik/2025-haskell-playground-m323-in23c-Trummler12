@@ -1,0 +1,10 @@
+packages:
+  demos/
+  geometry/
+  math/
+  numlang/
+  utility/
+  startup/
+
+-- Enable multi-repl for convenience
+multi-repl: True
